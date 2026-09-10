@@ -1,17 +1,28 @@
 import type { Metadata } from 'next';
-import { Instrument_Sans, Source_Serif_4 } from 'next/font/google';
+import { IBM_Plex_Mono, Instrument_Sans, Newsreader } from 'next/font/google';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import './globals.css';
 
-const instrument = Instrument_Sans({
+const sans = Instrument_Sans({
   variable: '--font-sans',
   subsets: ['latin'],
+  display: 'swap',
 });
 
-const sourceSerif = Source_Serif_4({
+const serif = Newsreader({
   variable: '--font-serif',
   subsets: ['latin'],
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
+  display: 'swap',
+});
+
+const mono = IBM_Plex_Mono({
+  variable: '--font-mono',
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -24,11 +35,18 @@ export const metadata: Metadata = {
   },
   description:
     'End-to-end AI, machine learning and data systems for companies, plus private development of future cryptocurrency and complex-market trading tools.',
-  icons: {
-    icon: [{ url: '/favicon.png', type: 'image/png' }],
-    shortcut: '/favicon.png',
-    apple: '/favicon.png',
+  applicationName: 'LatentMarket Labs',
+  openGraph: {
+    type: 'website',
+    siteName: 'LatentMarket Labs',
+    title: 'LatentMarket Labs | AI, Machine Learning and Data Systems',
+    description:
+      'End-to-end AI, machine learning and data systems for companies, plus private development of future cryptocurrency and complex-market trading tools.',
   },
+  twitter: {
+    card: 'summary_large_image',
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({
@@ -38,7 +56,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${instrument.variable} ${sourceSerif.variable}`}>
+      <body className={`${sans.variable} ${serif.variable} ${mono.variable}`}>
         <a className="skip-link" href="#main-content">
           Skip to main content
         </a>

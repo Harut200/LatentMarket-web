@@ -1,6 +1,9 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, MoveUpRight } from 'lucide-react';
-import { SystemMap } from '@/components/system-map';
+import { Schematic } from '@/components/schematic';
+
+export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 const capabilities = [
   [
@@ -29,41 +32,66 @@ const capabilities = [
   ],
 ];
 
+const standard = [
+  [
+    'Architecture',
+    'Design around system boundaries, operating constraints and failure modes.',
+  ],
+  ['Data', 'Make provenance, quality, transformations and ownership explicit.'],
+  [
+    'Models',
+    'Train and evaluate against credible baselines and real operating conditions.',
+  ],
+  [
+    'Operations',
+    'Deploy with monitoring, reproducibility and a path for safe improvement.',
+  ],
+];
+
 export default function Home() {
   return (
     <main>
       <section className="hero shell">
-        <div className="hero-copy">
-          <p className="eyebrow">AI, machine learning and data systems</p>
-          <h1>
-            We architect, build and deploy AI systems. We also develop
-            proprietary technology for complex-market trading.
-          </h1>
-          <p className="hero-intro">
-            LatentMarket Labs works with companies across the full technical
-            lifecycle, from data foundations and system architecture to model
-            training, deployment and production reliability. Separately, our
-            internal R&amp;D program develops private tools for cryptocurrency
-            and complex-market trading. Nothing is available for purchase today.
-          </p>
-          <div className="hero-actions">
-            <Link className="button button-primary" href="/partnerships">
-              Explore AI and data partnerships{' '}
-              <ArrowRight aria-hidden="true" size={17} />
-            </Link>
-            <Link className="text-link" href="/research">
-              View trading technology R&amp;D{' '}
-              <MoveUpRight aria-hidden="true" size={16} />
-            </Link>
-          </div>
+        <div className="hero-meta">
+          <span>LatentMarket Labs</span>
+          <span>AI / Machine learning / Data systems</span>
+          <span>Two-track operation</span>
         </div>
-        <SystemMap />
+        <div className="hero-body">
+          <div className="hero-copy">
+            <h1>We architect, build and deploy AI systems.</h1>
+            <p className="hero-second">
+              We also develop proprietary technology for complex-market trading.
+            </p>
+            <p className="hero-intro">
+              LatentMarket Labs works with companies across the full technical
+              lifecycle, from data foundations and system architecture to model
+              training, deployment and production reliability. Separately, our
+              internal R&amp;D program develops private tools for cryptocurrency
+              and complex-market trading. Nothing is available for purchase
+              today.
+            </p>
+            <div className="hero-actions">
+              <Link className="button button-primary" href="/partnerships">
+                Explore AI and data partnerships
+                <ArrowRight aria-hidden="true" size={17} />
+              </Link>
+              <Link className="text-link" href="/research">
+                View trading technology R&amp;D
+                <MoveUpRight aria-hidden="true" size={16} />
+              </Link>
+            </div>
+          </div>
+          <Schematic />
+        </div>
       </section>
 
       <section className="status-band">
-        <div className="shell status-grid system-status">
+        <div className="shell status-grid">
           <div>
-            <p className="eyebrow muted">How we operate</p>
+            <p className="label on-dark">
+              <span className="idx">00</span> How we operate
+            </p>
             <p className="status-title">Two distinct tracks</p>
           </div>
           <p>
@@ -79,9 +107,11 @@ export default function Home() {
       </section>
 
       <section className="section shell" id="two-tracks">
-        <div className="section-heading split-heading">
+        <div className="section-head">
           <div>
-            <p className="eyebrow">The operating model</p>
+            <p className="label">
+              <span className="idx">01</span> The operating model
+            </p>
             <h2>Partnership work and proprietary R&amp;D stay separate.</h2>
           </div>
           <p>
@@ -90,9 +120,11 @@ export default function Home() {
           </p>
         </div>
         <div className="track-grid">
-          <article className="track-card partnership-track">
-            <div className="track-number">01</div>
-            <p className="track-label">AI and data partnerships</p>
+          <article className="track-card">
+            <div className="track-index">
+              <span>AI and data partnerships</span>
+              <b>01</b>
+            </div>
             <h3>End-to-end systems built for real operating environments.</h3>
             <p>
               We help companies design data foundations, architect AI and
@@ -110,8 +142,10 @@ export default function Home() {
             </Link>
           </article>
           <article className="track-card private-track">
-            <div className="track-number">02</div>
-            <p className="track-label">Private trading technology</p>
+            <div className="track-index">
+              <span>Private trading technology</span>
+              <b>02</b>
+            </div>
             <h3>Proprietary tools for complex markets.</h3>
             <p>
               We research and develop systems for cryptocurrency and other
@@ -124,7 +158,7 @@ export default function Home() {
               <li>Commercialization is considered only after R&amp;D</li>
               <li>Any future offer is paid and selectively approved</li>
             </ol>
-            <Link className="text-link light-card" href="/waitlist">
+            <Link className="text-link" href="/waitlist">
               Join the future product waitlist{' '}
               <ArrowRight aria-hidden="true" size={16} />
             </Link>
@@ -134,9 +168,11 @@ export default function Home() {
 
       <section className="section capability-section">
         <div className="shell">
-          <div className="section-heading split-heading">
+          <div className="section-head">
             <div>
-              <p className="eyebrow">Company capabilities</p>
+              <p className="label">
+                <span className="idx">02</span> Company capabilities
+              </p>
               <h2>From data foundations to deployed systems.</h2>
             </div>
             <p>
@@ -144,9 +180,9 @@ export default function Home() {
               an existing product, platform or research program.
             </p>
           </div>
-          <div className="capability-grid">
+          <div className="index-list">
             {capabilities.map(([title, text], i) => (
-              <article key={title}>
+              <article className="index-row" key={title}>
                 <span>{String(i + 1).padStart(2, '0')}</span>
                 <h3>{title}</h3>
                 <p>{text}</p>
@@ -159,30 +195,19 @@ export default function Home() {
       <section className="section evidence-section">
         <div className="shell evidence-grid">
           <div className="evidence-title">
-            <p className="eyebrow">Shared technical standard</p>
+            <p className="label on-dark">
+              <span className="idx">03</span> Shared technical standard
+            </p>
             <h2>Systems must be defensible before they can be dependable.</h2>
+            <p>
+              The same standard governs work we deliver to a partner and work we
+              keep inside the research program.
+            </p>
           </div>
           <div className="evidence-list">
-            {[
-              [
-                'Architecture',
-                'Design around system boundaries, operating constraints and failure modes.',
-              ],
-              [
-                'Data',
-                'Make provenance, quality, transformations and ownership explicit.',
-              ],
-              [
-                'Models',
-                'Train and evaluate against credible baselines and real operating conditions.',
-              ],
-              [
-                'Operations',
-                'Deploy with monitoring, reproducibility and a path for safe improvement.',
-              ],
-            ].map(([title, description], i) => (
+            {standard.map(([title, description], i) => (
               <div className="evidence-row" key={title}>
-                <span>0{i + 1}</span>
+                <span>{String(i + 1).padStart(2, '0')}</span>
                 <h3>{title}</h3>
                 <p>{description}</p>
               </div>
@@ -191,30 +216,36 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section shell dual-cta">
-        <div>
-          <p className="eyebrow">For companies</p>
-          <h2>Bring us a difficult AI, machine learning or data problem.</h2>
-          <p>
-            Tell us what exists today, what needs to be built and how success
-            should be measured in operation.
-          </p>
-          <Link className="button button-dark" href="/partnerships">
-            AI and data partnership enquiry{' '}
-            <ArrowRight aria-hidden="true" size={17} />
-          </Link>
-        </div>
-        <div>
-          <p className="eyebrow">For prospective customers</p>
-          <h2>Request consideration for future paid tools.</h2>
-          <p>
-            No product is on sale today. If we decide to commercialize, we will
-            choose who may receive an offer and under what terms.
-          </p>
-          <Link className="button button-primary" href="/waitlist">
-            Join the future product waitlist{' '}
-            <ArrowRight aria-hidden="true" size={17} />
-          </Link>
+      <section className="section shell">
+        <div className="dual-cta">
+          <div>
+            <p className="label">
+              <span className="idx">04</span> For companies
+            </p>
+            <h2>Bring us a difficult AI, machine learning or data problem.</h2>
+            <p>
+              Tell us what exists today, what needs to be built and how success
+              should be measured in operation.
+            </p>
+            <Link className="button button-dark" href="/partnerships">
+              AI and data partnership enquiry
+              <ArrowRight aria-hidden="true" size={17} />
+            </Link>
+          </div>
+          <div>
+            <p className="label">
+              <span className="idx">05</span> For prospective customers
+            </p>
+            <h2>Request consideration for future paid tools.</h2>
+            <p>
+              No product is on sale today. If we decide to commercialize, we
+              will choose who may receive an offer and under what terms.
+            </p>
+            <Link className="button button-primary" href="/waitlist">
+              Join the future product waitlist
+              <ArrowRight aria-hidden="true" size={17} />
+            </Link>
+          </div>
         </div>
       </section>
     </main>

@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import { IntakeForm } from '@/components/intake-form';
 
-export const metadata: Metadata = { title: 'Future trading tools waitlist' };
+export const metadata: Metadata = {
+  title: 'Future trading tools waitlist',
+  alternates: { canonical: '/waitlist' },
+};
 
 export default async function WaitlistPage({
   searchParams,
@@ -33,7 +36,9 @@ export default async function WaitlistPage({
       </section>
       <section className="selection-section shell">
         <div>
-          <p className="eyebrow">What application means</p>
+          <p className="label">
+            <span className="idx">01</span> What application means
+          </p>
           <h2>Interest in a possible product, not a purchase or promise.</h2>
         </div>
         <div className="selection-points">
@@ -67,7 +72,9 @@ export default async function WaitlistPage({
       <section className="form-section">
         <div className="shell form-layout">
           <div>
-            <p className="eyebrow">Waitlist application</p>
+            <p className="label on-dark">
+              <span className="idx">02</span> Waitlist application
+            </p>
             <h2>Tell us who you are and how a future tool could fit.</h2>
             <p>
               Provide enough context for an initial review. Verified applicants

@@ -1,10 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { BrandMark } from '@/components/brand-mark';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const links = [
   { href: '/partnerships', label: 'AI & data partnerships' },
@@ -13,9 +13,18 @@ const links = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <header className="site-header">
+    <header className="site-header" data-scrolled={scrolled}>
       <div className="shell nav-wrap">
         <Link
           className="wordmark"
@@ -23,16 +32,7 @@ export function SiteHeader() {
           aria-label="LatentMarket Labs home"
           onClick={() => setOpen(false)}
         >
-          <span className="brand-logo-frame" aria-hidden="true">
-            <Image
-              className="brand-logo-image"
-              src="/latentmarket-labs-logo.png"
-              alt=""
-              width={54}
-              height={54}
-              priority
-            />
-          </span>
+          <BrandMark size={46} priority />
           <span>
             LatentMarket <b>Labs</b>
           </span>

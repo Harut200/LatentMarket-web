@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
-export const metadata: Metadata = { title: 'Trading tools R&D' };
+export const metadata: Metadata = {
+  title: 'Trading tools R&D',
+  alternates: { canonical: '/research' },
+};
 
 export default function ResearchPage() {
   return (

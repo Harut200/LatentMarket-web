@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import { IntakeForm } from '@/components/intake-form';
 
-export const metadata: Metadata = { title: 'AI and data partnerships' };
+export const metadata: Metadata = {
+  title: 'AI and data partnerships',
+  alternates: { canonical: '/partnerships' },
+};
 
 const capabilities = [
   [
@@ -52,9 +55,11 @@ export default function PartnershipsPage() {
         </p>
       </section>
       <section className="partner-capabilities shell">
-        <div className="section-heading split-heading">
+        <div className="section-head">
           <div>
-            <p className="eyebrow">Capabilities</p>
+            <p className="label">
+              <span className="idx">01</span> Capabilities
+            </p>
             <h2>Work across the entire technical lifecycle.</h2>
           </div>
           <p>
@@ -62,9 +67,9 @@ export default function PartnershipsPage() {
             layer where your team needs specialized depth.
           </p>
         </div>
-        <div className="partner-grid">
+        <div className="index-list">
           {capabilities.map(([title, text], i) => (
-            <article key={title}>
+            <article className="index-row" key={title}>
               <span>{String(i + 1).padStart(2, '0')}</span>
               <h3>{title}</h3>
               <p>{text}</p>
@@ -75,7 +80,9 @@ export default function PartnershipsPage() {
       <section className="engagement-section">
         <div className="shell">
           <div>
-            <p className="eyebrow">Engagement structure</p>
+            <p className="label">
+              <span className="idx">02</span> Engagement structure
+            </p>
             <h2>From problem definition to production operation.</h2>
           </div>
           <ol>
@@ -125,7 +132,9 @@ export default function PartnershipsPage() {
       <section className="form-section">
         <div className="shell form-layout">
           <div>
-            <p className="eyebrow">Start a conversation</p>
+            <p className="label on-dark">
+              <span className="idx">03</span> Start a conversation
+            </p>
             <h2>Describe the system you need to build or improve.</h2>
             <p>
               Useful enquiries explain the objective, current architecture,

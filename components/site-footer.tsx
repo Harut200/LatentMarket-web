@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import { BrandMark } from '@/components/brand-mark';
 
 export function SiteFooter() {
   return (
@@ -7,15 +7,7 @@ export function SiteFooter() {
       <div className="shell footer-grid">
         <div>
           <Link className="wordmark footer-mark" href="/">
-            <span className="brand-logo-frame" aria-hidden="true">
-              <Image
-                className="brand-logo-image"
-                src="/latentmarket-labs-logo.png"
-                alt=""
-                width={54}
-                height={54}
-              />
-            </span>
+            <BrandMark size={46} plate />
             <span>
               LatentMarket <b>Labs</b>
             </span>
