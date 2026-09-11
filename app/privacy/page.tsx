@@ -2,7 +2,21 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Privacy policy',
+  description:
+    'How LatentMarket Labs collects, uses, stores and protects information submitted through this website.',
   alternates: { canonical: '/privacy' },
+  openGraph: {
+    title: 'Privacy policy | LatentMarket Labs',
+    description:
+      'How LatentMarket Labs collects, uses, stores and protects information submitted through this website.',
+    url: '/privacy',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Privacy policy | LatentMarket Labs',
+    description:
+      'How LatentMarket Labs collects, uses, stores and protects information submitted through this website.',
+  },
 };
 
 const sections: [string, string][] = [
@@ -20,7 +34,7 @@ const sections: [string, string][] = [
   ],
   [
     'Retention and choices',
-    'We retain information only as long as reasonably needed for the purpose for which it was collected, legal obligations and security. You may ask us to access, correct or delete information connected with your email address. Contact details will be added before public launch.',
+    'We retain information only as long as reasonably needed for the purpose for which it was collected, legal obligations and security. You may ask us to access, correct or delete information connected with your email address. Submit a partnership enquiry with “Privacy or data request” selected and describe the request without including sensitive information.',
   ],
   [
     'International processing',
@@ -38,7 +52,7 @@ export default function PrivacyPage() {
       <div className="legal-head">
         <p className="eyebrow">Legal</p>
         <h1>Privacy policy</h1>
-        <p className="legal-date">Last updated: 10 September 2026</p>
+        <p className="legal-date">Last updated: 11 September 2026</p>
       </div>
       <div className="legal-body">
         {sections.map(([title, body], i) => (

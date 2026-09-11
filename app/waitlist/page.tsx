@@ -3,7 +3,21 @@ import { IntakeForm } from '@/components/intake-form';
 
 export const metadata: Metadata = {
   title: 'Future trading tools waitlist',
+  description:
+    'Apply to be considered for future paid complex-market trading tools if LatentMarket Labs decides to commercialize them.',
   alternates: { canonical: '/waitlist' },
+  openGraph: {
+    title: 'Future trading tools waitlist | LatentMarket Labs',
+    description:
+      'A selective waitlist for possible future paid complex-market trading tools. No product is currently offered.',
+    url: '/waitlist',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Future trading tools waitlist | LatentMarket Labs',
+    description:
+      'A selective waitlist for possible future paid complex-market trading tools. No product is currently offered.',
+  },
 };
 
 export default async function WaitlistPage({

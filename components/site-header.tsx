@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { BrandMark } from '@/components/brand-mark';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const links = [
   { href: '/partnerships', label: 'AI & data partnerships' },
@@ -15,6 +15,8 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const headerRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -23,8 +25,28 @@ export function SiteHeader() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    const onPointerDown = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('pointerdown', onPointerDown);
+    };
+  }, [open]);
+
   return (
-    <header className="site-header" data-scrolled={scrolled}>
+    <header ref={headerRef} className="site-header" data-scrolled={scrolled}>
       <div className="shell nav-wrap">
         <Link
           className="wordmark"
@@ -38,6 +60,7 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav
+          id="main-navigation"
           aria-label="Main navigation"
           className={open ? 'nav-links open' : 'nav-links'}
         >
@@ -60,10 +83,12 @@ export function SiteHeader() {
           </Link>
         </nav>
         <button
+          ref={menuButtonRef}
           className="menu-button"
           type="button"
           onClick={() => setOpen(!open)}
           aria-expanded={open}
+          aria-controls="main-navigation"
           aria-label={open ? 'Close navigation' : 'Open navigation'}
         >
           {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}

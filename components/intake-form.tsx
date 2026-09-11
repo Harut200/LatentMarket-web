@@ -41,15 +41,17 @@ export function IntakeForm({ kind }: IntakeFormProps) {
 
   if (state === 'success')
     return (
-      <output className="form-success">
+      <output className="form-success" aria-live="polite">
         <Check aria-hidden="true" />
-        <span>
+        <div>
           <h3>Thank you. Your note is with us.</h3>
           <p>
-            We will review the fit and follow up by email when there is a
-            relevant next step.
+            Check your inbox for a confirmation email and use the link inside to
+            complete your {kind === 'partnership' ? 'enquiry' : 'application'}.
+            If it does not arrive shortly, check your spam folder before trying
+            again.
           </p>
-        </span>
+        </div>
       </output>
     );
 
@@ -98,6 +100,7 @@ export function IntakeForm({ kind }: IntakeFormProps) {
               <option>Analytics and experimentation</option>
               <option>Scientific ML or applied R&amp;D</option>
               <option>End-to-end system delivery</option>
+              <option>Privacy or data request</option>
             </select>
           </label>
           <label>

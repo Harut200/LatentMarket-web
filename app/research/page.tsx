@@ -4,7 +4,21 @@ import { ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Trading tools R&D',
+  description:
+    'Selected public hypotheses from LatentMarket Labs’ private R&D program for cryptocurrency and complex-market trading tools.',
   alternates: { canonical: '/research' },
+  openGraph: {
+    title: 'Private trading technology R&D | LatentMarket Labs',
+    description:
+      'Selected public hypotheses from a proprietary program developing possible future complex-market trading tools.',
+    url: '/research',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Private trading technology R&D | LatentMarket Labs',
+    description:
+      'Selected public hypotheses from a proprietary program developing possible future complex-market trading tools.',
+  },
 };
 
 export default function ResearchPage() {

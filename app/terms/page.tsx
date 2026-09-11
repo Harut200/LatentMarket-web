@@ -2,7 +2,21 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Terms and conditions',
+  description:
+    'Terms governing use of the LatentMarket Labs website, partnership enquiries and future product waitlist.',
   alternates: { canonical: '/terms' },
+  openGraph: {
+    title: 'Terms and conditions | LatentMarket Labs',
+    description:
+      'Terms governing use of the LatentMarket Labs website, partnership enquiries and future product waitlist.',
+    url: '/terms',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Terms and conditions | LatentMarket Labs',
+    description:
+      'Terms governing use of the LatentMarket Labs website, partnership enquiries and future product waitlist.',
+  },
 };
 
 const sections: [string, string][] = [
@@ -46,7 +60,7 @@ export default function TermsPage() {
       <div className="legal-head">
         <p className="eyebrow">Legal</p>
         <h1>Terms and conditions</h1>
-        <p className="legal-date">Last updated: 10 September 2026</p>
+        <p className="legal-date">Last updated: 11 September 2026</p>
       </div>
       <div className="legal-body">
         {sections.map(([title, body], i) => (

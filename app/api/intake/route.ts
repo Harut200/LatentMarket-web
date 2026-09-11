@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { randomUUID } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
+import { consumeRateLimit } from '@/lib/rate-limit';
+import { siteUrl } from '@/lib/site';
 
 type Intake = {
   kind?: string;
@@ -30,7 +32,28 @@ const escapeHtml = (value: string) =>
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as Intake;
+    if (!request.headers.get('content-type')?.includes('application/json'))
+      return NextResponse.json(
+        { message: 'This submission format is not supported.' },
+        { status: 415 },
+      );
+
+    const requestOrigin = new URL(request.url).origin;
+    const origin = request.headers.get('origin');
+    if (origin && origin !== requestOrigin && origin !== siteUrl)
+      return NextResponse.json(
+        { message: 'Request not allowed.' },
+        { status: 403 },
+      );
+
+    const rawBody = await request.text();
+    if (rawBody.length > 20_000)
+      return NextResponse.json(
+        { message: 'This submission is too large.' },
+        { status: 413 },
+      );
+
+    const body = JSON.parse(rawBody) as Intake;
     if (body.website) return NextResponse.json({ ok: true });
 
     const kind = body.kind === 'partnership' ? 'partnership' : 'waitlist';
@@ -51,8 +74,7 @@ export async function POST(request: Request) {
     if (kind === 'partnership' && (!interest || !message))
       return NextResponse.json(
         {
-          message:
-            'Please select an area and describe the proposed collaboration.',
+          message: 'Please select an area and describe your proposed request.',
         },
         { status: 400 },
       );
@@ -70,9 +92,38 @@ export async function POST(request: Request) {
         { status: 400 },
       );
 
+    const forwardedFor = request.headers.get('x-forwarded-for');
+    const clientAddress =
+      forwardedFor?.split(',')[0]?.trim() ||
+      request.headers.get('x-real-ip') ||
+      'unknown';
+    const keyFor = (value: string) =>
+      createHash('sha256').update(value).digest('hex');
+    const addressLimit = consumeRateLimit(
+      [`address:${keyFor(clientAddress)}`],
+      8,
+      15 * 60 * 1000,
+    );
+    const emailLimit = consumeRateLimit(
+      [`email:${keyFor(email)}`],
+      3,
+      60 * 60 * 1000,
+    );
+    const blocked = !addressLimit.allowed ? addressLimit : emailLimit;
+    if (!blocked.allowed)
+      return NextResponse.json(
+        { message: 'Too many attempts. Please wait before trying again.' },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(blocked.retryAfterSeconds) },
+        },
+      );
+
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!supabaseUrl || !supabaseKey)
+    const resendKey = process.env.RESEND_API_KEY;
+    const fromEmail = process.env.RESEND_FROM_EMAIL;
+    if (!supabaseUrl || !supabaseKey || !resendKey || !fromEmail)
       return NextResponse.json(
         { message: 'Submissions are not open yet. Please check back shortly.' },
         { status: 503 },
@@ -109,18 +160,40 @@ export async function POST(request: Request) {
     );
     if (!stored.ok) throw new Error('Storage request failed');
 
-    const siteUrl =
-      process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
-    const resendKey = process.env.RESEND_API_KEY;
     const notificationEmail = process.env.NOTIFICATION_EMAIL;
-    const fromEmail = process.env.RESEND_FROM_EMAIL;
     const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
     const telegramChatId = process.env.TELEGRAM_CHAT_ID;
     const safeName = escapeHtml(name);
     const safeEmail = escapeHtml(email);
-    const notifications: Promise<Response>[] = [];
+    const verificationEmail = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${resendKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [email],
+        subject: 'Confirm your LatentMarket Labs email',
+        html: `<p>Hello ${safeName},</p><p>Please confirm your email for your ${kind === 'partnership' ? 'partnership enquiry' : 'future product waitlist application'}.</p><p><a href="${siteUrl}/api/verify?token=${verificationToken}&amp;kind=${kind}">Confirm email</a></p><p>If you did not submit this request, you can ignore this message.</p>`,
+      }),
+    });
+    if (!verificationEmail.ok) {
+      console.error(
+        'Verification email delivery failed',
+        verificationEmail.status,
+      );
+      return NextResponse.json(
+        {
+          message:
+            'We saved your request but could not send the confirmation email. Please try again shortly.',
+        },
+        { status: 502 },
+      );
+    }
 
-    if (resendKey && fromEmail) {
+    const notifications: Promise<Response>[] = [];
+    if (notificationEmail)
       notifications.push(
         fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -130,29 +203,12 @@ export async function POST(request: Request) {
           },
           body: JSON.stringify({
             from: fromEmail,
-            to: [email],
-            subject: 'Confirm your LatentMarket Labs email',
-            html: `<p>Hello ${safeName},</p><p>Please confirm your email for your ${kind === 'partnership' ? 'partnership enquiry' : 'future product waitlist application'}.</p><p><a href="${siteUrl}/api/verify?token=${verificationToken}">Confirm email</a></p><p>If you did not submit this request, you can ignore this message.</p>`,
+            to: [notificationEmail],
+            subject: `New ${kind} submission`,
+            html: `<p><strong>${safeName}</strong> (${safeEmail}) submitted a ${kind} enquiry.</p><p>Organization: ${escapeHtml(organization || 'Not provided')}</p><p>Profile: ${escapeHtml(profileType || role || 'Not provided')}</p><p>Interest: ${escapeHtml(interest || 'Not provided')}</p><p>Access: ${escapeHtml(accessType || 'Not provided')}</p><p>Timeframe: ${escapeHtml(timeframe || 'Not provided')}</p>`,
           }),
         }),
       );
-      if (notificationEmail)
-        notifications.push(
-          fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${resendKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              from: fromEmail,
-              to: [notificationEmail],
-              subject: `New ${kind} submission`,
-              html: `<p><strong>${safeName}</strong> (${safeEmail}) submitted a ${kind} enquiry.</p><p>Organization: ${escapeHtml(organization || 'Not provided')}</p><p>Profile: ${escapeHtml(profileType || role || 'Not provided')}</p><p>Interest: ${escapeHtml(interest || 'Not provided')}</p><p>Access: ${escapeHtml(accessType || 'Not provided')}</p><p>Timeframe: ${escapeHtml(timeframe || 'Not provided')}</p>`,
-            }),
-          }),
-        );
-    }
     if (telegramToken && telegramChatId)
       notifications.push(
         fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
@@ -164,7 +220,13 @@ export async function POST(request: Request) {
           }),
         }),
       );
-    await Promise.allSettled(notifications);
+    const results = await Promise.allSettled(notifications);
+    results.forEach((result) => {
+      if (result.status === 'rejected')
+        console.error('Team notification request failed');
+      else if (!result.value.ok)
+        console.error('Team notification delivery failed', result.value.status);
+    });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json(

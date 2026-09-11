@@ -3,7 +3,21 @@ import { IntakeForm } from '@/components/intake-form';
 
 export const metadata: Metadata = {
   title: 'AI and data partnerships',
+  description:
+    'Partner with LatentMarket Labs to architect, build, train, deploy and operate machine learning, AI and data systems.',
   alternates: { canonical: '/partnerships' },
+  openGraph: {
+    title: 'AI and data partnerships | LatentMarket Labs',
+    description:
+      'End-to-end architecture, data engineering, model development, deployment and production reliability.',
+    url: '/partnerships',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AI and data partnerships | LatentMarket Labs',
+    description:
+      'End-to-end architecture, data engineering, model development, deployment and production reliability.',
+  },
 };
 
 const capabilities = [
@@ -41,9 +55,24 @@ const capabilities = [
   ],
 ];
 
-export default function PartnershipsPage() {
+export default async function PartnershipsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ verified?: string }>;
+}) {
+  const { verified } = await searchParams;
   return (
     <main>
+      {verified === 'true' && (
+        <output className="verification-banner">
+          Your email is confirmed. Your partnership enquiry is ready for review.
+        </output>
+      )}
+      {verified === 'invalid' && (
+        <div className="verification-banner invalid" role="alert">
+          This confirmation link is invalid or has already been used.
+        </div>
+      )}
       <section className="page-hero shell">
         <p className="eyebrow">AI, machine learning and data partnerships</p>
         <h1>Architect, train and deploy systems that have to work.</h1>
